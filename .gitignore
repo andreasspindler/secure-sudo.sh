@@ -1,0 +1,11 @@
+# -*-mode: hosts-generic; coding:raw-text-unix;-*-
+build/
+.vscode/
+_*
+*~
+\#*
+.\#*
+.\#*\#
+tags
+TAGS
+BROWSE
