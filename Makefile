@@ -1,10 +1,10 @@
 .PHONY: all
 
-# runs secure-sudo.sh test script 
-all:
-	bash -n *.sh
-	chmod +x secure-sudo.sh
-	./secure-sudo.sh
-	ps u
+NAME=secure-sudo.sh
 
+all:
+	@bash -n *.sh
+	@chmod +x $(NAME)
+	./$(NAME)
+	@ps u | grep 'bash .*/$(NAME)$$' && echo 'WARNING: sudo heartbeat still running' || true
 

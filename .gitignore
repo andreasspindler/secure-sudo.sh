@@ -1,6 +1,4 @@
 # -*-mode: hosts-generic; coding:raw-text-unix;-*-
-build/
-.vscode/
 _*
 *~
 \#*
@@ -8,4 +6,5 @@ _*
 .\#*\#
 tags
 TAGS
-BROWSE
+.emacs.desktop*
+
