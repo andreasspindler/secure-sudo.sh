@@ -6,43 +6,25 @@
 The functionality was extensively tested in real-world scripts before
 published here.
 
-The makefile simply runs `secure-sudo.sh` as a test case.
+The makefile runs `secure-sudo.sh` as a test case.
 
-## Motivation ##
-
-While UNIX systems and APIs are now standardized with Linux, the
-privileges under which processes are executed remain a frontier.
-
-`sudo` allows the user role to be changed temporarily.
+## Description ##
 
 `sudo` can be used from within Bash scripts, but this requires special
 attention sicnce `sudo` is geared towards commandline use.
-
-## Description ##
 
 > sudo, allows a permitted user to execute a command as the superuser
 > or another user, as specified by the security policy. The invoking
 > user's real (not effective) user-ID is used to determine the user
 > name with which to query the security policy.
 
-Every call to `sudo` starts a new session on a timer. This is the sudo
-timestamp (usually 5-15 minutes). When it expires the user needs to
-re-authenticate to Linux.
-
 ### Challenges for scripts that require sudo  ###
 
-#### Starting the script via sudo ####
-
-A risky solution is to start the script that internally requires
-`sudo` using `sudo`. UID 0 for everything can mess with file
-permissions, accidentially kill processes or change passwords.
-
-Best practices:
-- validate active user and maybe even commands upfront
-- assume the session timeout is unknown
-- run only the necessary commands under `sudo`
-
 #### Frequent reauthentications ####
+
+Every call to `sudo` starts a new session on a timer. This is the sudo
+timestamp (usually 5-15 minutes). When it expires the user needs to
+reauthenticate to Linux.
 
 If the time between each `sudo` call is too long the script is halted
 to repeatedly request the password. This problem was solved by [this
@@ -55,18 +37,30 @@ Under Linux the lowest `sudo` timeout can be 1 minute. During testing
 of `secure-sudo.sh` such a low value triggered race conditions. A
 value of 30 seconds resolved the issue.
 
+#### Starting the script via sudo ####
+
+Starting the script that internally requires `sudo` using `sudo` is
+risky. UID 0 for everything can mess with file permissions,
+accidentially kill processes or change passwords.
+
+Best practices:
+- validate active user and maybe even commands upfront
+- assume the session timeout is unknown
+- run only the necessary commands under `sudo`
+
 #### Sudo may not execute the command ####
 
 `sudo` will not execute a command from the script if the user is not
-privileged or types the wrong password, but the rest of the script is.
+privileged or enters the wrong password. But the rest of the script
+is.
 
-Is the user privileged enough?
+To test if the user is privileged:
 
 > If the -l option was specified without a command, sudo, will exit
 > with a value of 0 if the user is allowed to run sudo, and they
 > authenticated successfully (as required by the security policy). 
 
-Are the commands used permitted?
+To test if the user can run a command:
 
 > If a command is specified with the -l option, the exit value will
 > only be 0 if the command is permitted by the security policy,
@@ -74,18 +68,15 @@ Are the commands used permitted?
 
 #### Sudo may never prompt ####
 
-If the user password is empty, sudo always works (no password prompt
-occurs and the timeout does not apply). For example, the script may
-always work in a VM in which the developer removed the password for
-convenience (`passwd -d`).
-
-Note that malicious code snippets from the web may count on empty
-passwords only to make hidden use of `sudo` to gain control.
+If the user password is empty, sudo will never ask for the password
+(timeout does not apply). Note that malicious code snippets from the
+web may count on empty passwords to make hidden use of sudo to gain
+control.
 
 #### Sudo may ask for the password every time ####
 
-The sudo timeout of the user might be 0 in which case `sudo` asks for
-the password every time (the [gist](https://gist.github.com/cowboy/3118588) won't work).
+The sudo timeout of the user might be 0 in which case sudo asks for
+the password every time (timeout does not apply).
 
 #### Sudo changes the home directory to "/root" ####
 
@@ -94,8 +85,8 @@ Fom Ubuntu 19.10 on (like in all modern Linuxes) the value of the
 
 #### Sudo exit values and signal handling ####
 
-Only when the failure of `sudo` has been ruled out can the exit value
-be assumed to be that of the command:
+When the user is privileged enough and failure of `sudo` has been
+ruled out, the sudo exit value is that of the command:
 
 > Upon successful execution of a command, the exit status from sudo,
 > will be the exit status of the program that was executed. If the
@@ -106,7 +97,7 @@ be assumed to be that of the command:
 
 Like with `which`, there may be a script behind `sudo` that does not
 implement all options listed on the sudo man page or lack its own sudo
-like Windows/Cygwin.
+(e.g. Windows/Cygwin).
 
 #### Sudo under Windows/Cygwin
 
@@ -215,10 +206,10 @@ To remove the user again:
 Copyright 2025 Andreas Spindler <info@andreasspindler.de>.
 
 The author is a freelancer and systems developer with 30+ years of
-experience.
+experience. 
 
-As in the old days, this code was hand-written without the help of AI
-(exception: Google Translate).
+This code was hand-written without the help of AI (exception: Google
+Translate).
 
 This project is licensed under the terms of the MIT license.
 
