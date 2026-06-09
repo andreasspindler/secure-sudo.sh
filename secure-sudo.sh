@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 #
-# Template for a Bash script that uses Sudo the most secure way.
+# Template for a Bash script that uses sudo securely.
 #
-# Runs under all Linux flavors.
-#
-# See README.md for implementation details.
+# See README.md for details.
 #
 function main {
     # test user privileges
@@ -18,13 +16,10 @@ function main {
     PID_SUDO_HEARTBEAT=$!
     test_user_passwd_empty
 
-    # test certain commands upfront (optional)
-    #sudo -l CMD ARGS...
-
     # run the actual script
     {
-        # modify the timeouts to make sure the sudo password is not
-        # requested on your system.
+        # modify the timeouts to make sure the sudo password is not requested on
+        # your system.
         sleep 1
         sudo echo Hello
         sleep 3
@@ -83,7 +78,10 @@ function test_user_passwd_empty {
     return 1
 }
 
+# set -u
+# set -o pipefail
 main
 RESULT=$?
 kill $PID_SUDO_HEARTBEAT
 exit $RESULT
+
