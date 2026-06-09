@@ -21,8 +21,8 @@ function main {
         # modify the timeouts to make sure the sudo password is not requested on
         # your system.
         sleep 1
-        sudo echo Hello
-        sleep 3
+        sudo echo hello
+        sleep 2
         sudo echo World
     }
 }
