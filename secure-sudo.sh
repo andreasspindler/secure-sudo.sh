@@ -78,8 +78,25 @@ function test_user_passwd_empty {
     return 1
 }
 
-# set -u
-# set -o pipefail
+# Treat unset variables and parameters other than the special parameters “@” and
+# “*”, or array variables subscripted with “@” or “*”, as an error when
+# performing parameter expansion. If expansion is attempted on an unset variable
+# or parameter, the shell prints an error message, and, if not interactive,
+# exits with a non-zero status.
+
+set -u
+
+# If set, the return value of a pipeline is the value of the last (rightmost)
+# command to exit with a non-zero status, or zero if all commands in the
+# pipeline exit successfully. This option is disabled by default.
+
+set -o pipefail
+
+# If set, pathname expansion patterns which match no files expand to nothing and
+# are removed, rather than expanding to themselves.
+
+shopt -s nullglob
+
 main
 RESULT=$?
 kill $PID_SUDO_HEARTBEAT
